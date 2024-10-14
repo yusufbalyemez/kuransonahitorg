@@ -73,8 +73,8 @@ const Verses = ({ verses, titles, notes, verses_eng, titles_eng, notes_eng }) =>
         <>
             <Navbar />
             <div className={`select-text w-screen h-screen bg-white py-2 flex flex-col overflow-y-auto mt-16`}>
-                <div className='flex justify-end w-screen m-0 p-0 my-1'>
-                    <div className={`${showEnglish ? "bg-gray-400" : "bg-gray-300"} px-2 py-2 mx-2 flex justify-center items-center h-[35px] w-[70px] cursor-pointer`} onClick={() => {
+                <div className='flex justify-end w-screen m-0 p-0 lg:pr-5 my-1'>
+                    <div className={`${showEnglish ? "bg-gray-400" : "bg-gray-300"} px-2 py-2 mx-2 flex justify-center items-center rounded shadow-md h-12 w-20 cursor-pointer`} onClick={() => {
 
                         setShowEnglish(!showEnglish)
                         localStorage.setItem("language", JSON.stringify(showEnglish ? "tr" : "eng"))
@@ -85,10 +85,39 @@ const Verses = ({ verses, titles, notes, verses_eng, titles_eng, notes_eng }) =>
                 {verses ? (
                     Object.entries(verses[no]).map(([vno, text]) => (
                         <div key={vno} className="p-2 flex w-full text-xl flex-col">
-                            {titles && titles[no][vno] && <div className="text-center "><span className="italic font-serif whitespace-pre mt-3 font-semibold text-wrap">{titles[no][vno]}</span></div>}
-                            {showEnglish && (titles_eng && titles_eng[no][vno] && <div className="text-center "><span className="italic font-serif whitespace-pre mt-3 font-semibold text-wrap">{titles_eng[no][vno]}</span></div>)}
-                            <div className="text-justify">{`[${no}:${vno}] `}<span className="font-serif">{renderVerseText(text)}</span></div>
-                            {showEnglish && (<div className="text-justify">{`[${no}:${vno}] `}<span className="font-serif whitespace-pre-line">{renderVerseText(verses_eng[no][vno])}</span></div>)}
+                            {/* İngilizce başlık önce gösterilecek */}
+                            {showEnglish && (titles_eng && titles_eng[no][vno] && (
+                                <div className="text-center">
+                                    <span className="italic font-serif whitespace-pre mt-3 font-semibold text-wrap">
+                                        {titles_eng[no][vno]}
+                                    </span>
+                                </div>
+                            ))}
+                            {/* Türkçe başlık sonra gösterilecek */}
+                            {titles && titles[no][vno] && (
+                                <div className="text-center">
+                                    <span className="italic font-serif whitespace-pre mt-3 font-semibold text-wrap">
+                                        {titles[no][vno]}
+                                    </span>
+                                </div>
+                            )}
+                            {/* İngilizce metin önce gösterilecek */}
+                            {showEnglish && (
+                                <div className="text-justify">
+                                    {`[${no}:${vno}] `}
+                                    <span className="font-serif whitespace-pre-line">
+                                        {renderVerseText(verses_eng[no][vno])}
+                                    </span>
+                                </div>
+                            )}
+                            {/* Türkçe metin sonra gösterilecek */}
+                            <div className="text-justify">
+                                {`[${no}:${vno}] `}
+                                <span className="font-serif">
+                                    {renderVerseText(text)}
+                                </span>
+                            </div>
+                            {/* Dipnotlar */}
                             {notes && notes[no + `:` + vno] && (
                                 <button
                                     onClick={() => toggleNotesVisibility(vno)}
@@ -98,16 +127,18 @@ const Verses = ({ verses, titles, notes, verses_eng, titles_eng, notes_eng }) =>
                                 </button>
                             )}
 
+                            {/* İngilizce dipnot */}
+                            {showEnglish && showNotes[vno] && notes_eng[no + `:` + vno] && (
+                                <div className="text-justify text-neutral-600 font-serif my-3 whitespace-pre-line border border-gray-300 px-1 py-1">
+                                    {notes_eng[no + `:` + vno].join('\n\n')}
+                                </div>
+                            )}
+                            {/* Türkçe dipnot */}
                             {showNotes[vno] && notes[no + `:` + vno] && (
-                                <div className={`text-justify text-neutral-600 font-serif my-3 whitespace-pre-line ${showNotes[vno] ? 'opacity-100' : 'opacity-0'} border border-gray-300 px-1 py-1`}>
+                                <div className="text-justify text-neutral-600 font-serif my-3 whitespace-pre-line border border-gray-300 px-1 py-1">
                                     {notes[no + `:` + vno].join('\n\n')}
                                 </div>
                             )}
-                            {showEnglish && (showNotes[vno] && notes_eng[no + `:` + vno] && (
-                                <div className={`text-justify text-neutral-600 font-serif my-3 whitespace-pre-line ${showNotes[vno] ? 'opacity-100' : 'opacity-0'} border border-gray-300 px-1 py-1`}>
-                                    {notes_eng[no + `:` + vno].join('\n\n')}
-                                </div>
-                            ))}
                         </div>
                     ))
                 ) : (
@@ -120,6 +151,7 @@ const Verses = ({ verses, titles, notes, verses_eng, titles_eng, notes_eng }) =>
                         Yükleniyor ...
                     </div>
                 )}
+
                 <div className="w-full text-center mt-7">♦ ♦ ♦ ♦</div>
 
                 {no === "114" && notes['end'] && (
